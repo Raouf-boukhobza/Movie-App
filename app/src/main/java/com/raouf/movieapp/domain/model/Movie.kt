@@ -6,7 +6,6 @@ data class Movie(
     val firstAirDate: String,
     val genreIds: List<Int>,
     val name: String,
-    val originCountry: List<String>,
     val originalLanguage: String,
     val originalName: String,
     val overview: String,

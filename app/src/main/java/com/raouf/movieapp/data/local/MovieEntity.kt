@@ -11,7 +11,6 @@ data class MovieEntity(
     val firstAirDate: String,
     val genreIds: String,
     val name: String,
-    val originCountry: List<String>,
     val originalLanguage: String,
     val originalName: String,
     val overview: String,
