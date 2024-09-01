@@ -11,7 +11,7 @@ interface MovieApi {
         @Path("category") category: String,
         @Query("page") page: Int,
         @Query("Api_key") apiKey: String = ApiKey
-    )
+    ) : MovieListDto
 
     companion object {
         const val baseUrl = "https://api.themoviedb.org/3/"

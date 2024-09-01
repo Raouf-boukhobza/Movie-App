@@ -3,27 +3,27 @@ package com.raouf.movieapp.data.remote
 import com.google.gson.annotations.SerializedName
 
 data class MovieDto(
-    val adult: Boolean,
+    val adult: Boolean?,
     @SerializedName("backdrop_path")
-    val backdropPath: String,
+    val backdropPath: String?,
     @SerializedName("first_air_date")
-    val firstAirDate: String,
+    val firstAirDate: String?,
     @SerializedName("genre_ids")
-    val genreIds: List<Int>,
-    val id: Int,
-    val name: String,
+    val genreIds: List<Int>?,
+    val id: Int?,
+    val name: String?,
     @SerializedName("origin_country")
-    val originCountry: List<String>,
+    val originCountry: List<String>?,
     @SerializedName("original_language")
-    val originalLanguage: String,
+    val originalLanguage: String?,
     @SerializedName("original_name")
-    val originalName: String,
-    val overview: String,
-    val popularity: Double,
+    val originalName: String?,
+    val overview: String?,
+    val popularity: Double?,
     @SerializedName("poster_path")
-    val posterPath: String,
+    val posterPath: String?,
     @SerializedName("vote_average")
-    val voteAverage: Double,
+    val voteAverage: Double?,
     @SerializedName("vote_count")
-    val voteCount: Int
+    val voteCount: Int?
 )
