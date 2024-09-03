@@ -46,7 +46,7 @@ class MovieRepositoryImpl @Inject constructor(
 
             val movieFromApi = try {
                 withContext(Dispatchers.IO) {
-                    movieApi.getMovieData(category, page)
+                    movieApi.getMovieList(category, page)
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -61,7 +61,6 @@ class MovieRepositoryImpl @Inject constructor(
                 emit(Resource.Error(message = e.message ?: ""))
                 return@flow
             }
-
             val moviesEntity = movieFromApi.results.let {
                 it.map { movieDto ->
                     movieDto.toMovieEntity(category = category)
@@ -82,7 +81,6 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMovie(id: Int): Flow<Resource<Movie>> {
-
         return flow {
             emit(Resource.IsLoading(true))
 
