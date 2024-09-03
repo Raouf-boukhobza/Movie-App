@@ -28,6 +28,7 @@ class MovieRepositoryImpl @Inject constructor(
     ): Flow<Resource<List<Movie>>> {
         return flow {
             emit(Resource.IsLoading(true))
+            //
             val listMovie = withContext(Dispatchers.IO) {
                 movieDao.getMovieByCategory(category = category)
             }
