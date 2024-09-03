@@ -6,11 +6,11 @@ import retrofit2.http.Query
 
 interface MovieApi {
 
-    @GET("Movie/{category}")
+    @GET("movie/{category}")
     suspend fun getMovieData(
         @Path("category") category: String,
         @Query("page") page: Int,
-        @Query("Api_key") apiKey: String = ApiKey
+        @Query("api_key") apiKey: String = ApiKey
     ) : MovieListDto
 
     companion object {

@@ -3,6 +3,7 @@ package com.raouf.movieapp.di
 import android.content.Context
 import androidx.room.Room
 import com.raouf.movieapp.data.local.MovieDB
+import com.raouf.movieapp.data.local.MovieDao
 import com.raouf.movieapp.data.remote.MovieApi
 import dagger.Module
 import dagger.Provides
@@ -45,5 +46,11 @@ class AppModule {
             MovieDB::class.java,
             "Moviedb"
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMovieDao(movieDB: MovieDB) : MovieDao{
+        return movieDB.movieDao()
     }
 }

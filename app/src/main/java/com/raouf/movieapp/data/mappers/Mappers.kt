@@ -16,7 +16,7 @@ fun MovieDto.toMovieEntity(
         overview = overview ?: "",
         backdropPath = backdropPath ?: "",
         firstAirDate = firstAirDate ?: "",
-        name = name ?: "",
+        name = title ?: "",
         popularity = popularity ?: 0.0,
         posterPath = posterPath ?: "",
         voteCount = voteCount ?: 0,

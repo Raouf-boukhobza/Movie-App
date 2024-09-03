@@ -1,6 +1,5 @@
 package com.raouf.movieapp.presontation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.raouf.movieapp.domain.MovieRepository
@@ -70,7 +69,6 @@ class MovieListViewModel @Inject constructor(
 
                             )
                         }
-                        Log.d("movielist", "error  ${result.message} ")
                     }
 
                     is Resource.IsLoading -> {

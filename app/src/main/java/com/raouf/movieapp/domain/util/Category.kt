@@ -1,6 +1,6 @@
 package com.raouf.movieapp.domain.util
 
-enum class Categorie {
-    POPULAR,
-    UPCOMING
+enum class Category {
+    popular,
+    upcoming
 }

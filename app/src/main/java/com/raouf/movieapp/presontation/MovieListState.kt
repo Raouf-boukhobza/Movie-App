@@ -5,7 +5,7 @@ import com.raouf.movieapp.domain.util.Category
 
 data class MovieListState(
     val isLoading: Boolean = false,
-    val currentCategory: Category,
+    val currentCategory: Category = Category.popular,
     val popularMoviesPage: Int = 1,
     val upcomingMoviesPage: Int = 1,
     val popularMoviesList: List<Movie> = emptyList(),
