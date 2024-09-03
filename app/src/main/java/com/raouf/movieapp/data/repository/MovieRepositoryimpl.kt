@@ -28,6 +28,22 @@ class MovieRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.IsLoading(true))
 
+            val listMovie = withContext(Dispatchers.IO) {
+                movieDao.getMovieByCategory(category = category)
+            }
+            val shouldLoadLocalMovie: Boolean = listMovie.isNotEmpty() && !forceFetchFromApi
+            if (shouldLoadLocalMovie) {
+                emit(
+                    Resource.Success(
+                        data = listMovie.map { movieEntity ->
+                            movieEntity.toMovie(category)
+                        }
+                    )
+                )
+                emit(Resource.IsLoading(false))
+                return@flow
+            }
+
             val movieFromApi = try {
                 withContext(Dispatchers.IO) {
                     movieApi.getMovieData(category, page)
@@ -51,35 +67,8 @@ class MovieRepositoryImpl @Inject constructor(
                     movieDto.toMovieEntity(category = category)
                 }
             }
-            withContext(Dispatchers.IO){
-                if (movieDao.getMovieByCategory(category).isNotEmpty()){
-                  movieDao.getMovieById(category)
-                }
-            }
 
             movieDao.UpsertMovieList(moviesEntity)
-
-            val listMovie = withContext(Dispatchers.IO) {
-                movieDao.getMovieByCategory(category = category)
-            }
-
-            val shouldLoadLocalMovie: Boolean = listMovie.isNotEmpty() && !forceFetchFromApi
-            if (shouldLoadLocalMovie) {
-                emit(
-                    Resource.Success(
-                        data = listMovie.map { movieEntity ->
-                            movieEntity.toMovie(category)
-                        }
-                    )
-                )
-                emit(Resource.IsLoading(false))
-                return@flow
-            }
-
-
-
-
-
 
             emit(
                 Resource.Success(
