@@ -15,7 +15,8 @@ activityCompose = "1.9.1"
 composeBom = "2024.04.01"
 loggingInterceptor = "4.10.0"
 materialIconsExtended = "1.6.8"
-navigationCompose = "2.7.7"
+navigationCompose = "2.8.0"
+
 okhttp = "4.12.0"
 retrofit = "2.9.0"
 roomKtx = "2.6.1"
@@ -27,6 +28,7 @@ androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref =
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltCompilerVersion" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomKtx" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomKtx" }

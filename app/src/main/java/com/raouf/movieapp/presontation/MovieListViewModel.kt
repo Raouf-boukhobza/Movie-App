@@ -38,9 +38,9 @@ class MovieListViewModel @Inject constructor(
             }
 
             is MoviesScreenUiEvent.Paginate -> {
-                if (event.category == Category.popular.name) {
+                if (event.category == Category.Popular.name) {
                     getPopularMovies(true)
-                } else if (event.category == Category.upcoming.name) {
+                } else if (event.category == Category.Upcoming.name) {
                     getUpcomingMovies(true)
                 }
             }
@@ -56,7 +56,7 @@ class MovieListViewModel @Inject constructor(
                 )
             }
             movieRepository.getMoviesList(
-                category = Category.popular.name,
+                category = Category.Popular.name,
                 page = movieListState.value.popularMoviesPage,
                 forceFetchFromApi = forceFetchFromApi
             ).collectLatest { result ->
@@ -104,7 +104,7 @@ class MovieListViewModel @Inject constructor(
                     )
                 }
                 movieRepository.getMoviesList(
-                    category = Category.upcoming.name,
+                    category = Category.Upcoming.name,
                     page = movieListState.value.upcomingMoviesPage,
                     forceFetchFromApi = forceFetchFromApi
                 ).collectLatest { result ->
