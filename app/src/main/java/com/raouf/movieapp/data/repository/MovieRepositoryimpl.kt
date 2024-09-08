@@ -7,11 +7,12 @@ import com.raouf.movieapp.data.mappers.toMovieEntity
 import com.raouf.movieapp.data.remote.MovieApi
 import com.raouf.movieapp.domain.MovieRepository
 import com.raouf.movieapp.domain.model.Movie
+import com.raouf.movieapp.domain.util.Category
 import com.raouf.movieapp.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flowOn
 import okio.IOException
 import javax.inject.Inject
 
@@ -19,7 +20,6 @@ class MovieRepositoryImpl @Inject constructor(
     private val movieApi: MovieApi,
     private val movieDao: MovieDao
 ) : MovieRepository {
-
     override suspend fun getMoviesList(
         forceFetchFromApi: Boolean,
         category: String,
@@ -28,10 +28,10 @@ class MovieRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.IsLoading(true))
 
-            val listMovie = withContext(Dispatchers.IO) {
-                movieDao.getMovieByCategory(category = category)
-            }
+            val listMovie = movieDao.getMovieByCategory(category = category)
+
             val shouldLoadLocalMovie: Boolean = listMovie.isNotEmpty() && !forceFetchFromApi
+
             if (shouldLoadLocalMovie) {
                 emit(
                     Resource.Success(
@@ -45,9 +45,7 @@ class MovieRepositoryImpl @Inject constructor(
             }
 
             val movieFromApi = try {
-                withContext(Dispatchers.IO) {
-                    movieApi.getMovieList(category, page)
-                }
+                movieApi.getMovieList(category, page)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(message = e.message ?: ""))
@@ -77,16 +75,14 @@ class MovieRepositoryImpl @Inject constructor(
                 )
             )
             emit(Resource.IsLoading(false))
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun getMovie(id: Int): Flow<Resource<Movie>> {
         return flow {
             emit(Resource.IsLoading(true))
 
-            val movieById = withContext(Dispatchers.IO) {
-                movieDao.getMovieById(id)
-            }
+            val movieById = movieDao.getMovieById(id)
 
             if (movieById != null) {
                 emit(
@@ -104,5 +100,49 @@ class MovieRepositoryImpl @Inject constructor(
             )
             emit(Resource.IsLoading(false))
         }
+    }
+
+    override suspend fun getTrendingMovie(
+        category: String
+    ): Flow<Resource<List<Movie>>> {
+        return flow<Resource<List<Movie>>> {
+            emit(Resource.IsLoading(isLoading = true))
+            val trendingMovies = try {
+                movieApi.getTrendingMovies()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                return@flow
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                return@flow
+            }
+
+            if (trendingMovies.results.isNotEmpty()) {
+                movieDao.deleteMovies(category = Category.trenidng.name)
+                movieDao.UpsertMovieList(
+                    movies = trendingMovies.results.let {
+                        it.map { movieDto ->
+                            movieDto.toMovieEntity(category)
+                        }
+                    }
+                )
+            }
+            emit(
+                Resource.Success(
+                    movieDao.getMovieByCategory(category).let {
+                        it.map {movieEntity ->
+                            movieEntity.toMovie(category)
+                        }
+                    }
+                )
+            )
+            emit(Resource.IsLoading(false))
+        }.flowOn(Dispatchers.IO)
     }
 }

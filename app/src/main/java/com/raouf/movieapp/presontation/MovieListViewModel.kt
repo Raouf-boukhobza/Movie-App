@@ -2,6 +2,7 @@ package com.raouf.movieapp.presontation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.raouf.movieapp.domain.MovieRepository
 import com.raouf.movieapp.domain.util.Category
 import com.raouf.movieapp.domain.util.Resource
@@ -25,6 +26,7 @@ class MovieListViewModel @Inject constructor(
     init {
         getPopularMovies(false)
         getUpcomingMovies(false)
+        getTrendingMovies()
     }
 
     fun onEvent(event: MoviesScreenUiEvent) {
@@ -38,9 +40,9 @@ class MovieListViewModel @Inject constructor(
             }
 
             is MoviesScreenUiEvent.Paginate -> {
-                if (event.category == Category.Popular.name) {
+                if (event.category == Category.popular.name) {
                     getPopularMovies(true)
-                } else if (event.category == Category.Upcoming.name) {
+                } else if (event.category == Category.upcoming.name) {
                     getUpcomingMovies(true)
                 }
             }
@@ -56,7 +58,7 @@ class MovieListViewModel @Inject constructor(
                 )
             }
             movieRepository.getMoviesList(
-                category = Category.Popular.name,
+                category = Category.popular.name,
                 page = movieListState.value.popularMoviesPage,
                 forceFetchFromApi = forceFetchFromApi
             ).collectLatest { result ->
@@ -66,7 +68,6 @@ class MovieListViewModel @Inject constructor(
                         _movieListState.update {
                             it.copy(
                                 isLoading = false
-
                             )
                         }
                     }
@@ -93,7 +94,39 @@ class MovieListViewModel @Inject constructor(
                 }
             }
         }
+    }
 
+    private fun getTrendingMovies(){
+        viewModelScope.launch {
+            movieRepository.getTrendingMovie(Category.trenidng.name).collectLatest{result ->
+                when(result){
+                    is Resource.Error -> {
+                        _movieListState.update {
+                            it.copy(
+                                isLoading = false
+                            )
+                        }
+                    }
+                    is Resource.IsLoading -> {
+                        _movieListState.update {
+                            it.copy(
+                                isLoading = result.isLoading
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        result.data?.let {movies ->
+                            _movieListState.update {
+                                it.copy(
+                                 trendingMovie = movies
+                                )
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
     }
 
     private fun getUpcomingMovies(forceFetchFromApi: Boolean) {
@@ -104,12 +137,11 @@ class MovieListViewModel @Inject constructor(
                     )
                 }
                 movieRepository.getMoviesList(
-                    category = Category.Upcoming.name,
+                    category = Category.upcoming.name,
                     page = movieListState.value.upcomingMoviesPage,
                     forceFetchFromApi = forceFetchFromApi
                 ).collectLatest { result ->
                     when (result) {
-
                         is Resource.Error -> {
                             _movieListState.update {
                                 it.copy(
@@ -117,7 +149,6 @@ class MovieListViewModel @Inject constructor(
                                 )
                             }
                         }
-
                         is Resource.IsLoading -> {
                             _movieListState.update {
                                 it.copy(
@@ -125,7 +156,6 @@ class MovieListViewModel @Inject constructor(
                                 )
                             }
                         }
-
                         is Resource.Success -> {
                             result.data?.let { newMovies ->
                                 _movieListState.update {
