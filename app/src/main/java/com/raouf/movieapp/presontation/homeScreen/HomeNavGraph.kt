@@ -10,14 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,14 +27,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -46,29 +42,32 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.raouf.movieapp.presontation.MovieListViewModel
-import com.raouf.movieapp.ui.theme.lightBlack
 
 
 @Composable
 fun HomeNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-) {
-    val viewModel  : MovieListViewModel = hiltViewModel()
+){
+    val viewModel: MovieListViewModel = hiltViewModel()
+    val state = viewModel.movieListState.collectAsState().value
     Scaffold(
         bottomBar = { BottomBar(navController) },
         topBar = {
-         TopBar()
+            TopBar()
         },
         containerColor = Color.Black
-        ){ padding ->
+    ) { padding ->
         NavHost(
             navController = navController,
             startDestination = BottomBarScreens.Home.root,
             modifier = Modifier.padding(padding)
         ) {
             composable(route = BottomBarScreens.Home.root) {
-                HomeScreen(viewModel)
+                HomeScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
             }
             composable(route = BottomBarScreens.Search.root) {
                 SearchScreen()
@@ -97,32 +96,31 @@ fun BottomBar(navController: NavHostController) {
 
     val bottomBarDestination = screens.any { it.root == currentDestination?.route }
     if (bottomBarDestination) {
-        NavigationBar(
-            containerColor = Color.Transparent,
-            modifier = Modifier.padding(8.dp),
+   BottomAppBar(
+       containerColor = Color.Transparent
+   ){
+       Row(
+           horizontalArrangement = Arrangement.SpaceAround,
+           verticalAlignment = Alignment.CenterVertically,
+           modifier = Modifier
+               .fillMaxWidth()
+               .height(80.dp)
+               .clip(shape = CircleShape)
+               .background(color = Color.DarkGray.copy(alpha = 0.4f))
+               .padding(horizontal = 8.dp)
+       ) {
+           screens.forEach { screen ->
+               AddItem(
+                   screen = screen,
+                   currentDestination = currentDestination,
+                   navController = navController
+               )
+           }
+       }
+   }
+   }
 
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .clip(shape = CircleShape)
-                    .background(color = Color.DarkGray.copy(alpha = 0.4f))
-                    .padding(horizontal = 8.dp)
-            ) {
-                screens.forEach { screen ->
-                    AddItem(
-                        screen = screen,
-                        currentDestination = currentDestination,
-                        navController = navController
-                    )
-                }
-            }
-        }
 
-    }
 }
 
 @Composable
@@ -179,31 +177,31 @@ fun AddItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar() {
-   TopAppBar(
-       title = {
-           Text(
-               text = buildAnnotatedString {
-                   append("Film")
-                   withStyle(
-                   style = SpanStyle(
-                       color = Color.Red,
-                       fontFamily = FontFamily.Cursive,
-                       fontSize = 34.sp,
-                       fontWeight = FontWeight.ExtraBold
-                   )
-                   ){
-                       append("Flow")
-                   }
-               },
-               fontSize = 32.sp,
-               fontWeight = FontWeight.Bold,
-               color = Color.White
-           )
-       },
-       colors = TopAppBarDefaults.topAppBarColors(
-           containerColor = Color.Black,
-       )
-   )
+    TopAppBar(
+        title = {
+            Text(
+                text = buildAnnotatedString {
+                    append("Film")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Red,
+                            fontFamily = FontFamily.Cursive,
+                            fontSize = 34.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    ) {
+                        append("Flow")
+                    }
+                },
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Black,
+        )
+    )
 }
 
 

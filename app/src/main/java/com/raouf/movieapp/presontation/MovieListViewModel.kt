@@ -135,7 +135,7 @@ class MovieListViewModel @Inject constructor(
             movieRepository.getTopRatedMovies(
                 page = movieListState.value.topRatedMoviesPages ,
                 category = Category.topRated.name
-            ).collectLatest{result ->
+            ).collect{result ->
                 when(result){
                     is Resource.Error -> {
                         _movieListState.update {

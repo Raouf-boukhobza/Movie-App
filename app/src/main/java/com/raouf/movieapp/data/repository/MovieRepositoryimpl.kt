@@ -155,7 +155,7 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTopRatedMovies(category: String , page: Int): Flow<Resource<List<Movie>>> {
-        return flow<Resource<List<Movie>>> {
+        return flow {
             emit(Resource.IsLoading(true))
             val topRatedMovies = movieDao.getMovieByCategory(category = category)
             if (topRatedMovies.isNotEmpty()){
@@ -168,7 +168,7 @@ class MovieRepositoryImpl @Inject constructor(
                         }
                     )
                 )
-            }else{
+            }else {
                 val topRatedMoviesFromApi = try {
                     movieApi.getTopRatedMovies(page = page)
                 } catch (e: IOException) {

@@ -3,6 +3,7 @@ package com.raouf.movieapp.presontation.homeScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +11,18 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -22,7 +30,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
@@ -41,28 +49,45 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.raouf.movieapp.data.remote.MovieApi
 import com.raouf.movieapp.domain.model.Movie
-import com.raouf.movieapp.presontation.MovieListViewModel
+import com.raouf.movieapp.domain.util.Category
+import com.raouf.movieapp.presontation.MovieListState
+import com.raouf.movieapp.presontation.MoviesScreenUiEvent
 import com.raouf.movieapp.ui.theme.lightBlack
 import kotlin.math.absoluteValue
 
 
 @Composable
-fun HomeScreen(viewModel: MovieListViewModel) {
+fun HomeScreen(
+    state: MovieListState,
+    onEvent: (MoviesScreenUiEvent) -> Unit
+) {
 
-    val state = viewModel.movieListState.collectAsState().value
-    val movieList = state.trendingMovie.shuffled().take(7)
-    if (!state.isLoading) {
+    val pagerMovieList = state.trendingMovie.shuffled().take(7)
+    if (state.trendingMovie.isNotEmpty()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            state = rememberLazyListState()
         ) {
-            item {
-                MoviePager(movieList)
+            item(
+                key = 1
+            ){
+                MoviePager(pagerMovieList)
             }
-            item {
+            item(
+                key = 2
+            ){
                 ListWithTypes(
                     movieList = state.topRatedMovies,
-                    type = "Top Rated"
+                )
+            }
+            item(
+                key = 3
+            ){
+                PopularMovie(
+                  state = state,
+                    onEvent = onEvent
+
                 )
             }
         }
@@ -170,7 +195,6 @@ fun MoviePager(movieList: List<Movie>) {
 
 @Composable
 fun ListWithTypes(
-    type: String,
     movieList: List<Movie>
 ) {
     Column(
@@ -183,16 +207,20 @@ fun ListWithTypes(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = type,
-                fontSize = 24.sp,
+                text = "Top Rated",
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.White
+                color = Color.White,
+                modifier = Modifier.padding(start = 4.dp)
             )
             Text(
                 text = "See all",
                 fontSize = 16.sp,
                 color = Color.Red,
                 fontWeight = FontWeight.Medium,
+                modifier = Modifier.clickable {
+
+                }
             )
         }
 
@@ -201,7 +229,11 @@ fun ListWithTypes(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(movieList) { movie ->
-                MovieCard(movie)
+                MovieCard(
+                    movie,
+                    height = 180.dp,
+                    with = 130.dp
+                )
             }
         }
     }
@@ -209,10 +241,10 @@ fun ListWithTypes(
 
 
 @Composable
-fun MovieCard(movie: Movie) {
+fun MovieCard(movie: Movie, height: Dp, with: Dp) {
     Column(
-        modifier = Modifier.size(width = 135.dp , height = 300.dp)
-    ){
+        modifier = Modifier.size(width = 125.dp, height = 250.dp)
+    ) {
         Card(
 
             modifier = Modifier
@@ -233,20 +265,58 @@ fun MovieCard(movie: Movie) {
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(height = 185.dp, width = 135.dp)
+                        .size(height = height, width = with)
                 )
 
             }
-
-
         }
         Text(
             text = movie.name,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             color = Color.White,
-            modifier = Modifier.padding(6.dp)
+            modifier = Modifier.padding(top = 6.dp, start = 8.dp)
         )
 
+    }
+}
+
+
+@Composable
+fun PopularMovie(
+    state: MovieListState,
+    onEvent: (MoviesScreenUiEvent) -> Unit
+) {
+    val movieList = state.popularMoviesList
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Popular Movies",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.White,
+            modifier = Modifier.padding(start = 12.dp)
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            state = rememberLazyGridState(),
+            modifier = Modifier
+                .width(500.dp)
+                .height(700.dp)
+        ) {
+            items(movieList.size , key = {it}) { index ->
+                MovieCard(
+                    movieList[index],
+                    height = 170.dp,
+                    with = 120.dp
+                )
+                if (index == (movieList.size - 1) && !state.isLoading) {
+                 onEvent(MoviesScreenUiEvent.Paginate(category = Category.popular.name ))
+                }
+            }
+        }
     }
 }
 
