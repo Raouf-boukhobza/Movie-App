@@ -61,7 +61,7 @@ fun HomeScreen(viewModel: MovieListViewModel) {
             }
             item {
                 ListWithTypes(
-                   movieList = state.topRatedMovies,
+                    movieList = state.topRatedMovies,
                     type = "Top Rated"
                 )
             }
@@ -177,9 +177,11 @@ fun ListWithTypes(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(horizontal = 8.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth() ,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically){
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = type,
                 fontSize = 24.sp,
@@ -194,8 +196,10 @@ fun ListWithTypes(
             )
         }
 
-        LazyRow(modifier = Modifier.fillMaxWidth() ,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             items(movieList) { movie ->
                 MovieCard(movie)
             }
@@ -206,29 +210,43 @@ fun ListWithTypes(
 
 @Composable
 fun MovieCard(movie: Movie) {
-    Column {
+    Column(
+        modifier = Modifier.size(width = 135.dp , height = 300.dp)
+    ){
         Card(
 
-            modifier = Modifier.clip(RoundedCornerShape(18.dp))
-                .border(width = 3.dp , color = lightBlack)
-        ){
+            modifier = Modifier
+                .clip(RoundedCornerShape(18.dp))
+                .border(width = (1.5).dp, color = lightBlack)
+        ) {
             val imageState = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(MovieApi.image_BaseUrl + movie.posterPath)
                     .size(Size.ORIGINAL)
                     .build()
             ).state
+
+
             if (imageState is AsyncImagePainter.State.Success) {
                 Image(
                     painter = imageState.painter,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(height = 185.dp, width = 125.dp)
+                        .size(height = 185.dp, width = 135.dp)
                 )
+
             }
 
+
         }
+        Text(
+            text = movie.name,
+            fontSize = 14.sp,
+            color = Color.White,
+            modifier = Modifier.padding(6.dp)
+        )
+
     }
 }
 
