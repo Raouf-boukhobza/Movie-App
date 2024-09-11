@@ -27,6 +27,7 @@ class MovieListViewModel @Inject constructor(
         getPopularMovies(false)
         getUpcomingMovies(false)
         getTrendingMovies()
+        getTopRatedMovies()
     }
 
     fun onEvent(event: MoviesScreenUiEvent) {
@@ -119,6 +120,43 @@ class MovieListViewModel @Inject constructor(
                             _movieListState.update {
                                 it.copy(
                                  trendingMovie = movies
+                                )
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    private fun getTopRatedMovies(){
+        viewModelScope.launch {
+            movieRepository.getTopRatedMovies(
+                page = movieListState.value.topRatedMoviesPages ,
+                category = Category.topRated.name
+            ).collectLatest{result ->
+                when(result){
+                    is Resource.Error -> {
+                        _movieListState.update {
+                            it.copy(
+                                isLoading = false
+                            )
+                        }
+                    }
+                    is Resource.IsLoading -> {
+                        _movieListState.update {
+                            it.copy(
+                                isLoading = result.isLoading
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        result.data?.let {movies ->
+                            _movieListState.update {
+                                it.copy(
+                                   topRatedMovies = movies,
+                                    topRatedMoviesPages = movieListState.value.topRatedMoviesPages + 1
                                 )
                             }
                         }

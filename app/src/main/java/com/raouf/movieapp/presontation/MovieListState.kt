@@ -10,5 +10,7 @@ data class MovieListState(
     val upcomingMoviesPage: Int = 1,
     val popularMoviesList: List<Movie> = emptyList(),
     val upcomingMovieList: List<Movie> = emptyList(),
-    val trendingMovie: List<Movie> = emptyList()
+    val trendingMovie: List<Movie> = emptyList(),
+    val topRatedMovies : List<Movie> = emptyList(),
+    val topRatedMoviesPages : Int = 1
 )
