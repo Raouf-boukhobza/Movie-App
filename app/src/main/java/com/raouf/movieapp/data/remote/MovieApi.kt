@@ -28,7 +28,11 @@ interface MovieApi {
         @Query("api_key") apiKey: String = APIKEY
     ) : MovieListDto
 
-
+    @GET("movie/top_rated")
+    suspend fun getTopRatedMovies(
+        @Query("api_key") apiKey: String = APIKEY,
+        @Query("page") page: Int
+    ) : MovieListDto
 
     companion object {
         const val baseUrl = "https://api.themoviedb.org/3/"

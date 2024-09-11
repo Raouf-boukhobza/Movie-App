@@ -17,4 +17,6 @@ interface MovieRepository  {
     suspend fun getTrendingMovie(
        category: String
     ) : Flow<Resource<List<Movie>>>
+
+    suspend fun getTopRatedMovies (category: String , page: Int) : Flow<Resource<List<Movie>>>
 }
