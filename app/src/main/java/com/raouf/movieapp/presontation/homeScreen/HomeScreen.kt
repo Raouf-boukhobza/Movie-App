@@ -63,6 +63,7 @@ fun HomeScreen(
 ) {
 
     val pagerMovieList = state.trendingMovie.shuffled().take(7)
+
     if (state.trendingMovie.isNotEmpty()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -77,8 +78,9 @@ fun HomeScreen(
             item(
                 key = 2
             ){
+                val topRatedMovies = state.topRatedMovies
                 ListWithTypes(
-                    movieList = state.topRatedMovies,
+                    movieList = topRatedMovies,
                 )
             }
             item(
@@ -272,7 +274,7 @@ fun MovieCard(movie: Movie, height: Dp, with: Dp) {
         }
         Text(
             text = movie.name,
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             color = Color.White,
             modifier = Modifier.padding(top = 6.dp, start = 8.dp)
         )
