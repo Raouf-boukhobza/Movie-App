@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import okio.IOException
 import javax.inject.Inject
 
@@ -79,28 +80,23 @@ class MovieRepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getMovie(id: Int): Flow<Resource<Movie>> {
-        return flow {
-            emit(Resource.IsLoading(true))
+    override suspend fun getMovie(id: Int): Resource<Movie> {
 
-            val movieById = movieDao.getMovieById(id)
-
-            if (movieById != null) {
-                emit(
-                    Resource.Success(
-                        data = movieById.toMovie(category = movieById.category)
-                    )
-                )
-                emit(Resource.IsLoading(false))
-                return@flow
-            }
-            emit(
-                Resource.Error(
-                    message = "Error ,No such movie "
-                )
-            )
-            emit(Resource.IsLoading(false))
+        val movieById =   withContext(Dispatchers.IO){
+            movieDao.getMovieById(id)
         }
+
+
+        if (movieById != null) {
+            return Resource.Success(
+                data = movieById.toMovie(category = movieById.category)
+            )
+
+        }
+
+        return Resource.Error(
+            message = "Error ,No such movie "
+        )
     }
 
     override suspend fun getTrendingMovie(
@@ -109,7 +105,7 @@ class MovieRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.IsLoading(isLoading = true))
             val trendingMoviesCatch = movieDao.getMovieByCategory(category)
-            if (trendingMoviesCatch.isNotEmpty()){
+            if (trendingMoviesCatch.isNotEmpty()) {
                 emit(
                     Resource.Success(
                         movieDao.getMovieByCategory(category).let {
@@ -154,24 +150,27 @@ class MovieRepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getTopRatedMovies(category: String , page: Int): Flow<Resource<List<Movie>>> {
+    override suspend fun getTopRatedMovies(
+        category: String,
+        page: Int
+    ): Flow<Resource<List<Movie>>> {
         return flow {
 
             emit(Resource.IsLoading(true))
 
-           var topRatedMovies = movieDao.getMovieByCategory(category = category)
+            var topRatedMovies = movieDao.getMovieByCategory(category = category)
 
-            if (topRatedMovies.isNotEmpty()){
+            if (topRatedMovies.isNotEmpty()) {
                 emit(
                     Resource.Success(
                         data = topRatedMovies.let {
-                            it.map {movieEntity ->
+                            it.map { movieEntity ->
                                 movieEntity.toMovie(category = category)
                             }
                         }
                     )
                 )
-            }else {
+            } else {
                 val topRatedMoviesFromApi = try {
                     movieApi.getTopRatedMovies(page = page)
                 } catch (e: IOException) {
@@ -199,7 +198,7 @@ class MovieRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Success(
                         data = topRatedMovies.let {
-                            it.map {movieEntity ->
+                            it.map { movieEntity ->
                                 movieEntity.toMovie(category = category)
                             }
                         }

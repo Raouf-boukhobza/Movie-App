@@ -1,8 +1,7 @@
-package com.raouf.movieapp.presontation
+package com.raouf.movieapp.presontation.homeScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.raouf.movieapp.domain.MovieRepository
 import com.raouf.movieapp.domain.util.Category
 import com.raouf.movieapp.domain.util.Resource
@@ -32,13 +31,6 @@ class MovieListViewModel @Inject constructor(
 
     fun onEvent(event: MoviesScreenUiEvent) {
         when (event) {
-            is MoviesScreenUiEvent.Navigate -> {
-                _movieListState.update {
-                    it.copy(
-                        currentCategory = event.category
-                    )
-                }
-            }
 
             is MoviesScreenUiEvent.Paginate -> {
                 if (event.category == Category.popular.name) {

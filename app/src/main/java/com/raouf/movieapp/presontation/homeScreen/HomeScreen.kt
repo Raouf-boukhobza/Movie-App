@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -50,8 +49,6 @@ import coil.size.Size
 import com.raouf.movieapp.data.remote.MovieApi
 import com.raouf.movieapp.domain.model.Movie
 import com.raouf.movieapp.domain.util.Category
-import com.raouf.movieapp.presontation.MovieListState
-import com.raouf.movieapp.presontation.MoviesScreenUiEvent
 import com.raouf.movieapp.ui.theme.lightBlack
 import kotlin.math.absoluteValue
 
@@ -59,7 +56,8 @@ import kotlin.math.absoluteValue
 @Composable
 fun HomeScreen(
     state: MovieListState,
-    onEvent: (MoviesScreenUiEvent) -> Unit
+    onEvent: (MoviesScreenUiEvent) -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
 
     val pagerMovieList = state.trendingMovie.shuffled().take(7)
@@ -72,12 +70,13 @@ fun HomeScreen(
         ) {
             item(
                 key = 1
-            ){
-                MoviePager(pagerMovieList)
+            ) {
+
+                MoviePager(pagerMovieList, navigateToDetails)
             }
             item(
                 key = 2
-            ){
+            ) {
                 val topRatedMovies = state.topRatedMovies
                 ListWithTypes(
                     movieList = topRatedMovies,
@@ -85,9 +84,9 @@ fun HomeScreen(
             }
             item(
                 key = 3
-            ){
+            ) {
                 PopularMovie(
-                  state = state,
+                    state = state,
                     onEvent = onEvent
 
                 )
@@ -97,7 +96,10 @@ fun HomeScreen(
 }
 
 @Composable
-fun MoviePager(movieList: List<Movie>) {
+fun MoviePager(
+    movieList: List<Movie>,
+    navigateToDetails: (Int) -> Unit
+) {
     val pageState = rememberPagerState(
         pageCount = { movieList.size },
         initialPage = movieList.size / 2
@@ -125,7 +127,11 @@ fun MoviePager(movieList: List<Movie>) {
             ).state
 
             if (imageState is AsyncImagePainter.State.Success) {
-                Box {
+                Box(
+                    modifier = Modifier.clickable {
+                        navigateToDetails(movieList[Index].id)
+                    }
+                ) {
                     Image(
                         painter = imageState.painter,
                         contentScale = ContentScale.Fit,
@@ -306,16 +312,16 @@ fun PopularMovie(
             state = rememberLazyGridState(),
             modifier = Modifier
                 .width(500.dp)
-                .height(700.dp)
+                .height(550.dp)
         ) {
-            items(movieList.size , key = {it}) { index ->
+            items(movieList.size, key = { it }) { index ->
                 MovieCard(
                     movieList[index],
                     height = 170.dp,
                     with = 120.dp
                 )
                 if (index == (movieList.size - 1) && !state.isLoading) {
-                 onEvent(MoviesScreenUiEvent.Paginate(category = Category.popular.name ))
+                    onEvent(MoviesScreenUiEvent.Paginate(category = Category.popular.name))
                 }
             }
         }

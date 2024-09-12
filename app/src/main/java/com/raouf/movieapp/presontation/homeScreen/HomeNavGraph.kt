@@ -41,16 +41,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.raouf.movieapp.presontation.MovieListViewModel
 
 
 @Composable
 fun HomeNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    navigateToDetail : (Int) -> Unit
 ){
     val viewModel: MovieListViewModel = hiltViewModel()
     val state = viewModel.movieListState.collectAsState().value
+
     Scaffold(
         bottomBar = { BottomBar(navController) },
         topBar = {
@@ -66,7 +67,10 @@ fun HomeNavGraph(
             composable(route = BottomBarScreens.Home.root) {
                 HomeScreen(
                     state = state,
-                    onEvent = viewModel::onEvent
+                    onEvent = viewModel::onEvent,
+                    navigateToDetails = { id ->
+                        navigateToDetail(id)
+                    }
                 )
             }
             composable(route = BottomBarScreens.Search.root) {
