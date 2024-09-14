@@ -8,8 +8,8 @@ data class MovieDto(
     val backdropPath: String?,
     @SerializedName("first_air_date")
     val firstAirDate: String?,
-    @SerializedName("genre_ids")
-    val genreIds: List<Int>?,
+    @SerializedName("genres")
+    val genres: List<Genres>?,
     val id: Int?,
     @SerializedName("title")
     val title: String?,
@@ -26,5 +26,7 @@ data class MovieDto(
     @SerializedName("vote_average")
     val voteAverage: Double?,
     @SerializedName("vote_count")
-    val voteCount: Int?
+    val voteCount: Int?,
+    @SerializedName("release_date")
+    val releaseDate : String?
 )

@@ -1,16 +1,17 @@
 package com.raouf.movieapp.data.mappers
 
 import com.raouf.movieapp.data.local.MovieEntity
+import com.raouf.movieapp.data.remote.Genres
 import com.raouf.movieapp.data.remote.MovieDto
 import com.raouf.movieapp.domain.model.Movie
 
 
 fun MovieDto.toMovieEntity(
-    category: String
+    category: String?
 ): MovieEntity {
     return MovieEntity(
         adult = adult ?: false,
-        category = category,
+        category = category ?: "",
         originalLanguage = originalLanguage ?: "",
         originalName = originalName ?: "",
         overview = overview ?: "",
@@ -21,17 +22,14 @@ fun MovieDto.toMovieEntity(
         posterPath = posterPath ?: "",
         voteCount = voteCount ?: 0,
         voteAverage = voteAverage ?: 0.0,
-        genreIds = try {
-            genreIds?.joinToString(",") ?: "-1,-2"
-        } catch (e: Exception) {
-            "-1,-2"
-        }
+        genreIds = genres ?: listOf(Genres(0,"")) ,
+        releaseDate = releaseDate ?: "",
+        remoteId = id ?: 0
     )
 }
 
 
 fun MovieEntity.toMovie(
-    category: String
 ):Movie{
     return Movie(
         id = id,
@@ -47,10 +45,8 @@ fun MovieEntity.toMovie(
         posterPath = posterPath ,
         voteCount = voteCount ,
         voteAverage = voteAverage ,
-        genreIds = try {
-            genreIds.split(",") .map { it.toInt() }
-        }catch (e : Exception){
-            listOf(-1,-2)
-        }
+        genres = genreIds,
+        releasDate = releaseDate,
+        remoteId = remoteId
     )
 }

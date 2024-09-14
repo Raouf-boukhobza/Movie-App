@@ -34,6 +34,13 @@ interface MovieApi {
         @Query("page") page: Int
     ) : MovieListDto
 
+
+    @GET("movie/{movie_id}")
+    suspend fun getMovieByIdFromRemote (
+        @Path("movie_id") movieId : Int,
+        @Query("api_key") apiKey: String = APIKEY,
+    ):MovieDto
+
     companion object {
         const val baseUrl = "https://api.themoviedb.org/3/"
         const val image_BaseUrl = "https://image.tmdb.org/t/p/w500"

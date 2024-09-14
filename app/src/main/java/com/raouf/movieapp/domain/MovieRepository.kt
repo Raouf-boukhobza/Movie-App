@@ -12,7 +12,7 @@ interface MovieRepository  {
         page : Int
     ):Flow<Resource<List<Movie>>>
 
-    suspend fun getMovie(id :Int) : Resource<Movie>
+    suspend fun getMovie(id :Int ) : Flow<Resource<Movie>>
 
     suspend fun getTrendingMovie(
        category: String

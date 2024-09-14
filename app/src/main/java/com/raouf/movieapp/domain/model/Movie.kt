@@ -1,10 +1,12 @@
 package com.raouf.movieapp.domain.model
 
+import com.raouf.movieapp.data.remote.Genres
+
 data class Movie(
     val adult: Boolean,
     val backdropPath: String,
     val firstAirDate: String,
-    val genreIds: List<Int>,
+    val genres: List<Genres>,
     val name: String,
     val originalLanguage: String,
     val originalName: String,
@@ -13,6 +15,8 @@ data class Movie(
     val posterPath: String,
     val voteAverage: Double,
     val voteCount: Int,
-    val category : String,
-    val id  : Int
+    val category: String,
+    val id: Int,
+    val releasDate: String,
+    val remoteId: Int
 )

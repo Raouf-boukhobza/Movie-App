@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 import okio.IOException
 import javax.inject.Inject
 
@@ -38,7 +37,7 @@ class MovieRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Success(
                         data = listMovie.map { movieEntity ->
-                            movieEntity.toMovie(category)
+                            movieEntity.toMovie()
                         }
                     )
                 )
@@ -72,7 +71,7 @@ class MovieRepositoryImpl @Inject constructor(
             emit(
                 Resource.Success(
                     data = moviesEntity.map {
-                        it.toMovie(category)
+                        it.toMovie()
                     }
                 )
             )
@@ -80,24 +79,37 @@ class MovieRepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getMovie(id: Int): Resource<Movie> {
+    override suspend fun getMovie(id: Int): Flow<Resource<Movie>> {
+        return flow {
+            emit(Resource.IsLoading(true))
+            val movieById = try {
+                movieApi.getMovieByIdFromRemote(movieId = id)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                return@flow
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                return@flow
+            }
 
-        val movieById =   withContext(Dispatchers.IO){
-            movieDao.getMovieById(id)
-        }
-
-
-        if (movieById != null) {
-            return Resource.Success(
-                data = movieById.toMovie(category = movieById.category)
+            emit(
+                Resource.Success(
+                    data = movieById.toMovieEntity(
+                        category = null
+                    ).toMovie()
+                )
             )
-
+            emit(Resource.IsLoading(false))
         }
 
-        return Resource.Error(
-            message = "Error ,No such movie "
-        )
     }
+
 
     override suspend fun getTrendingMovie(
         category: String
@@ -110,13 +122,11 @@ class MovieRepositoryImpl @Inject constructor(
                     Resource.Success(
                         movieDao.getMovieByCategory(category).let {
                             it.map { movieEntity ->
-                                movieEntity.toMovie(category)
+                                movieEntity.toMovie()
                             }
                         }
                     ))
             }
-
-
             val trendingMovies = try {
                 movieApi.getTrendingMovies()
             } catch (e: IOException) {
@@ -140,7 +150,7 @@ class MovieRepositoryImpl @Inject constructor(
                     Resource.Success(
                         movieDao.getMovieByCategory(category).let {
                             it.map { movieEntity ->
-                                movieEntity.toMovie(category)
+                                movieEntity.toMovie()
                             }
                         }
                     )
@@ -165,7 +175,7 @@ class MovieRepositoryImpl @Inject constructor(
                     Resource.Success(
                         data = topRatedMovies.let {
                             it.map { movieEntity ->
-                                movieEntity.toMovie(category = category)
+                                movieEntity.toMovie()
                             }
                         }
                     )
@@ -199,7 +209,7 @@ class MovieRepositoryImpl @Inject constructor(
                     Resource.Success(
                         data = topRatedMovies.let {
                             it.map { movieEntity ->
-                                movieEntity.toMovie(category = category)
+                                movieEntity.toMovie()
                             }
                         }
                     )
