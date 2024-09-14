@@ -24,7 +24,8 @@ fun MovieDto.toMovieEntity(
         voteAverage = voteAverage ?: 0.0,
         genreIds = genres ?: listOf(Genres(0,"")) ,
         releaseDate = releaseDate ?: "",
-        remoteId = id ?: 0
+        remoteId = id ?: 0,
+        videoUrl = videoUrl ?: ""
     )
 }
 
@@ -47,6 +48,7 @@ fun MovieEntity.toMovie(
         voteAverage = voteAverage ,
         genres = genreIds,
         releasDate = releaseDate,
-        remoteId = remoteId
+        remoteId = remoteId,
+        videoUrl = videoUrl
     )
 }

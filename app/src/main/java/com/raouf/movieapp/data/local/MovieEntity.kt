@@ -26,5 +26,6 @@ data class MovieEntity(
     val category : String,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val remoteId : Int
+    val remoteId : Int,
+    val videoUrl : String,
 )

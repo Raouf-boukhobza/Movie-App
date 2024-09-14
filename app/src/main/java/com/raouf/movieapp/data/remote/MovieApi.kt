@@ -41,6 +41,13 @@ interface MovieApi {
         @Query("api_key") apiKey: String = APIKEY,
     ):MovieDto
 
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getVideo(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String = APIKEY,
+    ) : VideoDto
+
     companion object {
         const val baseUrl = "https://api.themoviedb.org/3/"
         const val image_BaseUrl = "https://image.tmdb.org/t/p/w500"

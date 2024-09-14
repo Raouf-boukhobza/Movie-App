@@ -18,5 +18,6 @@ data class Movie(
     val category: String,
     val id: Int,
     val releasDate: String,
-    val remoteId: Int
+    val remoteId: Int,
+    val videoUrl : String
 )

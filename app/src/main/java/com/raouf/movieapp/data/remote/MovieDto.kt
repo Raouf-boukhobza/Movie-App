@@ -3,6 +3,7 @@ package com.raouf.movieapp.data.remote
 import com.google.gson.annotations.SerializedName
 
 data class MovieDto(
+
     val adult: Boolean?,
     @SerializedName("backdrop_path")
     val backdropPath: String?,
@@ -28,5 +29,6 @@ data class MovieDto(
     @SerializedName("vote_count")
     val voteCount: Int?,
     @SerializedName("release_date")
-    val releaseDate : String?
+    val releaseDate : String?,
+    val videoUrl : String?
 )

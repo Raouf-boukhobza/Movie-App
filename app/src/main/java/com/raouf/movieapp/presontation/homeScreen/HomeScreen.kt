@@ -60,7 +60,7 @@ fun HomeScreen(
     navigateToDetails: (Int) -> Unit
 ) {
 
-    val pagerMovieList = state.trendingMovie.shuffled().take(7)
+    val pagerMovieList = state.trendingMovie.take(7)
 
     if (state.trendingMovie.isNotEmpty()) {
         LazyColumn(
@@ -129,7 +129,7 @@ fun MoviePager(
             if (imageState is AsyncImagePainter.State.Success) {
                 Box(
                     modifier = Modifier.clickable {
-                        navigateToDetails(movieList[Index].id)
+                        navigateToDetails(movieList[Index].remoteId)
                     }
                 ) {
                     Image(
@@ -312,7 +312,7 @@ fun PopularMovie(
             state = rememberLazyGridState(),
             modifier = Modifier
                 .width(500.dp)
-                .height(550.dp)
+                .height(600.dp)
         ) {
             items(movieList.size, key = { it }) { index ->
                 MovieCard(
