@@ -22,6 +22,18 @@ class DetailViewModel @Inject constructor(
     val detailState = _detailState.asStateFlow()
 
 
+
+    fun onEvent(event: DetailScreenEvent){
+        when(event){
+            DetailScreenEvent.PlayVideo -> {
+                _detailState.update {
+                    it.copy(
+                        playVideo = true
+                    )
+                }
+            }
+        }
+    }
     fun getMovieDetail(
         id : Int
     ){

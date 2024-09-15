@@ -5,5 +5,6 @@ import com.raouf.movieapp.domain.model.Movie
 data class DetailScreenState(
     val selectedMovie : Movie? = null,
     val video : String = "",
-    val isLoading : Boolean = false
+    val isLoading : Boolean = false,
+    val playVideo : Boolean = false
 )

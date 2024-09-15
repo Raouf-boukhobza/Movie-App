@@ -104,5 +104,7 @@ dependencies {
     // system UI Controller
     implementation(libs.accompanist.systemuicontroller)
 
+    //Youtube Player
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.28'
 
 }
