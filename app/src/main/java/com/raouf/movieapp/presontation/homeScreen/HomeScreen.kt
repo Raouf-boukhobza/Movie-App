@@ -71,15 +71,15 @@ fun HomeScreen(
             item(
                 key = 1
             ) {
-
                 MoviePager(pagerMovieList, navigateToDetails)
             }
             item(
                 key = 2
             ) {
                 val topRatedMovies = state.topRatedMovies
-                ListWithTypes(
+                TopRatedView(
                     movieList = topRatedMovies,
+                    navigateToDetails
                 )
             }
             item(
@@ -87,8 +87,8 @@ fun HomeScreen(
             ) {
                 PopularMovie(
                     state = state,
-                    onEvent = onEvent
-
+                    onEvent = onEvent,
+                    navigateToDetails
                 )
             }
         }
@@ -98,7 +98,7 @@ fun HomeScreen(
 @Composable
 fun MoviePager(
     movieList: List<Movie>,
-    navigateToDetails: (Int) -> Unit
+    navigateToDetails: (Int) -> Unit,
 ) {
     val pageState = rememberPagerState(
         pageCount = { movieList.size },
@@ -202,8 +202,9 @@ fun MoviePager(
 
 
 @Composable
-fun ListWithTypes(
-    movieList: List<Movie>
+fun TopRatedView(
+    movieList: List<Movie>,
+    navigateToDetails: (Int) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -240,7 +241,8 @@ fun ListWithTypes(
                 MovieCard(
                     movie,
                     height = 180.dp,
-                    with = 130.dp
+                    with = 130.dp,
+                    navigateToDetails
                 )
             }
         }
@@ -249,7 +251,7 @@ fun ListWithTypes(
 
 
 @Composable
-fun MovieCard(movie: Movie, height: Dp, with: Dp) {
+fun MovieCard(movie: Movie, height: Dp, with: Dp , navigateToDetails: (Int) -> Unit) {
     Column(
         modifier = Modifier.size(width = 125.dp, height = 250.dp)
     ) {
@@ -265,8 +267,6 @@ fun MovieCard(movie: Movie, height: Dp, with: Dp) {
                     .size(Size.ORIGINAL)
                     .build()
             ).state
-
-
             if (imageState is AsyncImagePainter.State.Success) {
                 Image(
                     painter = imageState.painter,
@@ -274,6 +274,9 @@ fun MovieCard(movie: Movie, height: Dp, with: Dp) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(height = height, width = with)
+                        .clickable {
+                            navigateToDetails(movie.remoteId)
+                        }
                 )
 
             }
@@ -282,7 +285,9 @@ fun MovieCard(movie: Movie, height: Dp, with: Dp) {
             text = movie.name,
             fontSize = 14.sp,
             color = Color.White,
-            modifier = Modifier.padding(top = 6.dp, start = 8.dp)
+            modifier = Modifier.padding(top = 6.dp, start = 8.dp),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
 
     }
@@ -292,7 +297,8 @@ fun MovieCard(movie: Movie, height: Dp, with: Dp) {
 @Composable
 fun PopularMovie(
     state: MovieListState,
-    onEvent: (MoviesScreenUiEvent) -> Unit
+    onEvent: (MoviesScreenUiEvent) -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
     val movieList = state.popularMoviesList
     Column(
@@ -318,7 +324,8 @@ fun PopularMovie(
                 MovieCard(
                     movieList[index],
                     height = 170.dp,
-                    with = 120.dp
+                    with = 120.dp,
+                    navigateToDetails
                 )
                 if (index == (movieList.size - 1) && !state.isLoading) {
                     onEvent(MoviesScreenUiEvent.Paginate(category = Category.popular.name))

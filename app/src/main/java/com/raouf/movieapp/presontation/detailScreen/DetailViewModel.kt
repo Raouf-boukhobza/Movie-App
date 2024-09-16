@@ -18,13 +18,13 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    private val _detailState: MutableStateFlow<DetailScreenState> = MutableStateFlow(DetailScreenState())
+    private val _detailState: MutableStateFlow<DetailScreenState> =
+        MutableStateFlow(DetailScreenState())
     val detailState = _detailState.asStateFlow()
 
 
-
-    fun onEvent(event: DetailScreenEvent){
-        when(event){
+    fun onEvent(event: DetailScreenEvent) {
+        when (event) {
             DetailScreenEvent.PlayVideo -> {
                 _detailState.update {
                     it.copy(
@@ -32,41 +32,39 @@ class DetailViewModel @Inject constructor(
                     )
                 }
             }
-        }
-    }
-    fun getMovieDetail(
-        id : Int
-    ){
-        viewModelScope.launch {
-         repository.getMovie(id).collectLatest { result ->
-            when(result){
-                is Resource.Error -> {
-                    _detailState.update {
-                        it.copy(
-                            isLoading = false
-                        )
+
+            is DetailScreenEvent.SelectMovie -> {
+                viewModelScope.launch {
+                    repository.getMovie(event.id).collectLatest { result ->
+                        when (result) {
+                            is Resource.Error -> {
+                                _detailState.update {
+                                    it.copy(
+                                        isLoading = false
+                                    )
+                                }
+                            }
+
+                            is Resource.IsLoading -> {
+                                _detailState.update {
+                                    it.copy(
+                                        isLoading = false
+                                    )
+                                }
+                            }
+
+                            is Resource.Success -> {
+                                _detailState.update {
+                                    it.copy(
+                                        selectedMovie = result.data
+                                    )
+                                }
+                            }
+                        }
                     }
-                }
-                is Resource.IsLoading -> {
-                    _detailState.update {
-                        it.copy(
-                            isLoading = false
-                        )
-                    }
-                }
-                is Resource.Success -> {
-                    _detailState.update {
-                        it.copy(
-                            selectedMovie = result.data
-                        )
-                    }
+
                 }
             }
-         }
-
         }
     }
-
-
-
 }

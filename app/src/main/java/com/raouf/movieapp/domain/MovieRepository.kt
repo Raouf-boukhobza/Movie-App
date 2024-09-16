@@ -19,4 +19,6 @@ interface MovieRepository  {
     ) : Flow<Resource<List<Movie>>>
 
     suspend fun getTopRatedMovies (category: String , page: Int) : Flow<Resource<List<Movie>>>
+
+    suspend fun getSearchMovie(query : String , page : Int) : Flow<Resource<List<Movie>>>
 }

@@ -1,4 +1,4 @@
-package com.raouf.movieapp.presontation.homeScreen
+package com.raouf.movieapp.presontation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,14 +41,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.raouf.movieapp.presontation.homeScreen.HomeScreen
+import com.raouf.movieapp.presontation.homeScreen.MovieListViewModel
+import com.raouf.movieapp.presontation.homeScreen.UpcomingScreen
+import com.raouf.movieapp.presontation.searchScreen.SearchScreen
+import com.raouf.movieapp.presontation.searchScreen.SearchScreenViewModel
 
 
 @Composable
 fun HomeNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    navigateToDetail : (Int) -> Unit
-){
+    navigateToDetail: (Int) -> Unit
+) {
     val viewModel: MovieListViewModel = hiltViewModel()
     val state = viewModel.movieListState.collectAsState().value
 
@@ -70,11 +75,20 @@ fun HomeNavGraph(
                     onEvent = viewModel::onEvent,
                     navigateToDetails = { id ->
                         navigateToDetail(id)
+
                     }
                 )
             }
             composable(route = BottomBarScreens.Search.root) {
-                SearchScreen()
+                val searchViewModel: SearchScreenViewModel = hiltViewModel()
+                val searchState = searchViewModel.state.collectAsState().value
+                SearchScreen(
+                    state = searchState,
+                    onEvent = searchViewModel::onEvent,
+                    navigateToDetails = { id ->
+                        navigateToDetail(id)
+                    }
+                )
             }
             composable(route = BottomBarScreens.Upcoming.root) {
                 UpcomingScreen()
@@ -98,31 +112,28 @@ fun BottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val bottomBarDestination = screens.any { it.root == currentDestination?.route }
-    if (bottomBarDestination) {
-   BottomAppBar(
-       containerColor = Color.Transparent
-   ){
-       Row(
-           horizontalArrangement = Arrangement.SpaceAround,
-           verticalAlignment = Alignment.CenterVertically,
-           modifier = Modifier
-               .fillMaxWidth()
-               .height(80.dp)
-               .clip(shape = CircleShape)
-               .background(color = Color.DarkGray.copy(alpha = 0.4f))
-               .padding(horizontal = 8.dp)
-       ) {
-           screens.forEach { screen ->
-               AddItem(
-                   screen = screen,
-                   currentDestination = currentDestination,
-                   navController = navController
-               )
-           }
-       }
-   }
-   }
+    BottomAppBar(
+        containerColor = Color.Transparent,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+                .clip(shape = CircleShape)
+                .background(color = Color.DarkGray.copy(alpha = 0.4f))
+                .padding(horizontal = 8.dp)
+        ) {
+            screens.forEach { screen ->
+                AddItem(
+                    screen = screen,
+                    currentDestination = currentDestination,
+                    navController = navController
+                )
+            }
+        }
+    }
 
 
 }
@@ -207,5 +218,8 @@ fun TopBar() {
         )
     )
 }
+
+
+
 
 

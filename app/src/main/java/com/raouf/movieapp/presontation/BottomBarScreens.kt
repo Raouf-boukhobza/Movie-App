@@ -1,4 +1,4 @@
-package com.raouf.movieapp.presontation.homeScreen
+package com.raouf.movieapp.presontation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home

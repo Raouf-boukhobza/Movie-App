@@ -1,6 +1,8 @@
 package com.raouf.movieapp.data.repository
 
+import android.util.Log
 import coil.network.HttpException
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
 import com.raouf.movieapp.data.local.MovieDao
 import com.raouf.movieapp.data.mappers.toMovie
 import com.raouf.movieapp.data.mappers.toMovieEntity
@@ -21,6 +23,8 @@ class MovieRepositoryImpl @Inject constructor(
     private val movieApi: MovieApi,
     private val movieDao: MovieDao
 ) : MovieRepository {
+
+
     override suspend fun getMoviesList(
         forceFetchFromApi: Boolean,
         category: String,
@@ -87,9 +91,10 @@ class MovieRepositoryImpl @Inject constructor(
                 movieApi.getMovieByIdFromRemote(movieId = id).copy(
                     videoUrl = trailer.results.filter { video ->
                         video.type == "Trailer"
-                    }.map {video ->
+                    }.map { video ->
                         video.key
-                    }[0])
+                    }[0]
+                )
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(message = e.message ?: ""))
@@ -224,6 +229,48 @@ class MovieRepositoryImpl @Inject constructor(
             emit(Resource.IsLoading(false))
         }.flowOn(Dispatchers.IO)
 
+    }
+
+    override suspend fun getSearchMovie(
+        query: String,
+        page: Int
+    ): Flow<Resource<List<Movie>>> {
+        return flow<Resource<List<Movie>>> {
+            emit(Resource.IsLoading(true))
+            val searchMovieList = try {
+                movieApi.getSearchMovies(
+                    query = query,
+                    page = page
+                )
+            }catch (e: IOException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                Log.d("serach", "getSearchMovie: ${e.message} ")
+                return@flow
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                Log.d("serach", "getSearchMovie: ${e.message} ")
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.message ?: ""))
+                Log.d("serach", "getSearchMovie: ${e.message} ")
+                return@flow
+            }
+            Log.d("serach", "getSearchMovie: ${searchMovieList.results.size} ")
+            emit(
+                Resource.Success(
+                    data = searchMovieList.results.let {
+                        it.map { movieDto ->
+                            movieDto.toMovieEntity(null).toMovie()
+                        }
+                    }
+                )
+            )
+            emit(Resource.IsLoading(false))
+
+        }.flowOn(Dispatchers.IO)
     }
 
     private suspend fun extracted(

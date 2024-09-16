@@ -15,7 +15,7 @@ interface MovieApi {
     ) : MovieListDto
 
 
-    @GET("search/multi")
+    @GET("search/movie")
     suspend fun getSearchMovies(
         @Query("api_key") apiKey : String = APIKEY,
         @Query("page") page: Int,
