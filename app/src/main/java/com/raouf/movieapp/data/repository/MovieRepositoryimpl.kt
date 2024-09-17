@@ -1,8 +1,6 @@
 package com.raouf.movieapp.data.repository
 
-import android.util.Log
 import coil.network.HttpException
-import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
 import com.raouf.movieapp.data.local.MovieDao
 import com.raouf.movieapp.data.mappers.toMovie
 import com.raouf.movieapp.data.mappers.toMovieEntity
@@ -261,20 +259,19 @@ class MovieRepositoryImpl @Inject constructor(
             }catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(message = e.message ?: ""))
-                Log.d("serach", "getSearchMovie: ${e.message} ")
+
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Resource.Error(message = e.message ?: ""))
-                Log.d("serach", "getSearchMovie: ${e.message} ")
+
                 return@flow
             } catch (e: Exception) {
                 e.printStackTrace()
                 emit(Resource.Error(message = e.message ?: ""))
-                Log.d("serach", "getSearchMovie: ${e.message} ")
+
                 return@flow
             }
-            Log.d("serach", "getSearchMovie: ${searchMovieList.results.size} ")
             emit(
                 Resource.Success(
                     data = searchMovieList.results.let {

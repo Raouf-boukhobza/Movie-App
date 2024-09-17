@@ -11,12 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.RunningWithErrors
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
-
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -43,7 +38,7 @@ fun DetailScreen(
     id: Int,
     state : DetailScreenState,
     onEvent: (DetailScreenEvent) -> Unit
-) {
+){
     onEvent(DetailScreenEvent.SelectMovie(id))
     val movie = state.selectedMovie
     movie?.let {
@@ -58,28 +53,18 @@ fun DetailScreen(
                     .fillMaxWidth()
                     .height(405.dp)
             ) {
-                val backDropImageState = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(MovieApi.image_BaseUrl + movie.backdropPath)
-                        .size(Size.ORIGINAL)
-                        .build()
-                ).state
                 val posterImageState = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(MovieApi.image_BaseUrl + movie.posterPath)
                         .size(Size.ORIGINAL)
                         .build()
                 ).state
-
-                TrailerPlayer(
-                    videoKey = movie.videoUrl,
-                    lifecycleOwner = LocalLifecycleOwner.current
-                )
-                if (backDropImageState is AsyncImagePainter.State.Error) {
-                    Icon(
-                        imageVector = Icons.Default.RunningWithErrors,
-                        contentDescription = null,
-                        modifier = Modifier.size(100.dp)
+                Box(
+                    modifier = Modifier.background(color = Color.Black)
+                ){
+                    TrailerPlayer(
+                        videoKey = movie.videoUrl,
+                        lifecycleOwner = LocalLifecycleOwner.current
                     )
                 }
 
@@ -88,8 +73,7 @@ fun DetailScreen(
                         .padding(start = 8.dp)
                         .align(Alignment.BottomStart)
                 ) {
-                    Card(
-                    ) {
+                    Card {
                         if (posterImageState is AsyncImagePainter.State.Success) {
                             Image(
                                 painter = posterImageState.painter,

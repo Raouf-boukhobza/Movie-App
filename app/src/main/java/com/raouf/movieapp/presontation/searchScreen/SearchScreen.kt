@@ -1,10 +1,13 @@
 package com.raouf.movieapp.presontation.searchScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -42,13 +45,16 @@ fun SearchScreen(
             state = state,
             onEvent = onEvent
         )
+
         val movieList = state.searchMovies
+        Spacer(modifier = Modifier.height(8.dp))
         if (movieList.isEmpty()) {
             Text(
                 text = "No Result",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
                     .offset(y = 250.dp),
                 color = Color.White
             )
