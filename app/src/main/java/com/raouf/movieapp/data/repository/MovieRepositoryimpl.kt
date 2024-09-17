@@ -86,15 +86,8 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getMovie(id: Int): Flow<Resource<Movie>> {
         return flow<Resource<Movie>> {
             emit(Resource.IsLoading(true))
-            val movieById = try {
-                val trailer = movieApi.getVideo(id)
-                movieApi.getMovieByIdFromRemote(movieId = id).copy(
-                    videoUrl = trailer.results.filter { video ->
-                        video.type == "Trailer"
-                    }.map { video ->
-                        video.key
-                    }[0]
-                )
+            var movieById = try {
+                movieApi.getMovieByIdFromRemote(movieId = id)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(message = e.message ?: ""))
@@ -109,6 +102,29 @@ class MovieRepositoryImpl @Inject constructor(
                 return@flow
             }
 
+
+            movieById = movieById.copy(
+                videoUrl = try {
+                    movieApi.getVideo(id)
+                        .results.filter {movie ->
+                            movie.type == "Trailer"
+                        }.map {movie ->
+                            movie.key
+                        }[0]
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    emit(Resource.Error(message = e.message ?: ""))
+                    ""
+                } catch (e: HttpException) {
+                    e.printStackTrace()
+                    emit(Resource.Error(message = e.message ?: ""))
+                   ""
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    emit(Resource.Error(message = e.message ?: ""))
+                   ""
+                }
+            )
             emit(
                 Resource.Success(
                     data = movieById.toMovieEntity(
