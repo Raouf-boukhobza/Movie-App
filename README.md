@@ -26,8 +26,8 @@ Welcome to the **Movie App**! This mobile application allows users to discover, 
 - [**Kotlin Coroutines**](https://kotlinlang.org/docs/coroutines-overview.html): For managing background tasks.
 - [**Flow**](https://developer.android.com/kotlin/flow): For reactive data streams.
 
-<img src="./screenshots/home.jpg" alt="Home Screen" width="200"/>&nbsp;&nbsp;<img src="./screenshots/search.jpg" alt="Home Screen" width="200"/><br/>
-<img src="./screenshots/upcoming.jpg" alt="Home Screen" width="200"/>&nbsp;&nbsp;<img src="./screenshots/detail.jpg" alt="Home Screen" width="200"/>
+<img src="./screenshots/home.jpg" alt="Home Screen" width="200"/>&nbsp;&nbsp;&nbsp;&nbsp;<img src="./screenshots/search.jpg" alt="Home Screen" width="200"/><br/><br/>
+<img src="./screenshots/upcoming.jpg" alt="Home Screen" width="200"/>&nbsp;&nbsp;&nbsp;&nbsp;<img src="./screenshots/detail.jpg" alt="Home Screen" width="200"/>
 
 
 
