@@ -15,10 +15,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+           MovieAppTheme(
+               dynamicColor = false
+           ){
+               MainNavHost(
+                   mainNavController = rememberNavController()
+               )
+           }
 
-                MainNavHost(
-                    mainNavController = rememberNavController()
-                )
         }
     }
 }

@@ -26,7 +26,6 @@ class UpcomingScreenViewModel @Inject constructor(
         getUpcomingMovies(false)
     }
 
-
     private fun getUpcomingMovies(forceFetchFromApi: Boolean) {
         viewModelScope.launch {
             _upcomingState.update {
@@ -35,7 +34,7 @@ class UpcomingScreenViewModel @Inject constructor(
                 )
             }
             repository.getMoviesList(
-                category = Category.popular.name,
+                category = Category.upcoming.name,
                 page = upcomingState.value.upcomingMoviesPage,
                 forceFetchFromApi = forceFetchFromApi
             ).collectLatest { result ->
@@ -62,7 +61,7 @@ class UpcomingScreenViewModel @Inject constructor(
                             _upcomingState.update {
                                 it.copy(
                                    upcomingMovieList = upcomingState.value.upcomingMovieList + newMovies.shuffled(),
-                                   upcomingMoviesPage = upcomingState.value.upcomingMoviesPage + 1
+                                  // upcomingMoviesPage = upcomingState.value.upcomingMoviesPage + 1
                                 )
                             }
                         }
@@ -71,9 +70,5 @@ class UpcomingScreenViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun paginate(){
-        getUpcomingMovies(true)
     }
 }

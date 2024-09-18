@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -43,26 +45,29 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.raouf.movieapp.presontation.homeScreen.HomeScreen
 import com.raouf.movieapp.presontation.homeScreen.MovieListViewModel
-import com.raouf.movieapp.presontation.homeScreen.UpcomingScreen
 import com.raouf.movieapp.presontation.searchScreen.SearchScreen
 import com.raouf.movieapp.presontation.searchScreen.SearchScreenViewModel
+import com.raouf.movieapp.presontation.upcoming.UpcomingScreen
+import com.raouf.movieapp.presontation.upcoming.UpcomingScreenViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     navigateToDetail: (Int) -> Unit
 ) {
-    val viewModel: MovieListViewModel = hiltViewModel()
-    val state = viewModel.movieListState.collectAsState().value
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
 
     Scaffold(
         bottomBar = { BottomBar(navController) },
         topBar = {
-            TopBar()
+            TopBar(scrollBehavior = scrollBehavior)
         },
-        containerColor = Color.Black
+        containerColor = Color.Black,
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { padding ->
         NavHost(
             navController = navController,
@@ -70,6 +75,8 @@ fun HomeNavGraph(
             modifier = Modifier.padding(padding)
         ) {
             composable(route = BottomBarScreens.Home.root) {
+                val viewModel: MovieListViewModel = hiltViewModel()
+                val state = viewModel.movieListState.collectAsState().value
                 HomeScreen(
                     state = state,
                     onEvent = viewModel::onEvent,
@@ -91,7 +98,9 @@ fun HomeNavGraph(
                 )
             }
             composable(route = BottomBarScreens.Upcoming.root) {
-                UpcomingScreen()
+                val upcomingViewModel : UpcomingScreenViewModel = hiltViewModel()
+                val upcomingState = upcomingViewModel.upcomingState.collectAsState().value
+                UpcomingScreen(state = upcomingState)
             }
             composable(route = BottomBarScreens.Profile.root) {
                 Text("profile")
@@ -191,7 +200,8 @@ fun AddItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar() {
+fun TopBar(scrollBehavior: TopAppBarScrollBehavior) {
+
     TopAppBar(
         title = {
             Text(
@@ -215,7 +225,8 @@ fun TopBar() {
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Black,
-        )
+        ),
+        scrollBehavior = scrollBehavior
     )
 }
 
