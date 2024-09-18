@@ -35,8 +35,6 @@ class MovieListViewModel @Inject constructor(
             is MoviesScreenUiEvent.Paginate -> {
                 if (event.category == Category.popular.name) {
                     getPopularMovies(true)
-                } else if (event.category == Category.upcoming.name) {
-                    getUpcomingMovies(true)
                 }
             }
         }
