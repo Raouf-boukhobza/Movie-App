@@ -3,6 +3,7 @@ package com.raouf.movieapp.presontation.upcoming
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +36,8 @@ import java.util.Locale
 
 @Composable
 fun UpcomingScreen(
-    state: UpcomingState
+    state: UpcomingState,
+    navigateToDetail: (Int) -> Unit
 ) {
 
 
@@ -45,6 +47,7 @@ fun UpcomingScreen(
             items(movieList.size, key = { it }) { index ->
                 UpcomingCard(
                     movie = movieList[index],
+                    navigateToDetail = navigateToDetail
                 )
             }
 
@@ -57,6 +60,7 @@ fun UpcomingScreen(
 fun UpcomingCard(
     modifier: Modifier = Modifier,
     movie: Movie,
+    navigateToDetail : (Int) -> Unit
 ) {
     val posterImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -74,6 +78,9 @@ fun UpcomingCard(
                 shape = RoundedCornerShape(18.dp)
             )
             .fillMaxWidth()
+            .clickable {
+                navigateToDetail(movie.remoteId)
+            }
     ) {
         Card {
             if (posterImageState is AsyncImagePainter.State.Success) {

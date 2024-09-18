@@ -98,9 +98,13 @@ fun HomeNavGraph(
                 )
             }
             composable(route = BottomBarScreens.Upcoming.root) {
-                val upcomingViewModel : UpcomingScreenViewModel = hiltViewModel()
+                val upcomingViewModel: UpcomingScreenViewModel = hiltViewModel()
                 val upcomingState = upcomingViewModel.upcomingState.collectAsState().value
-                UpcomingScreen(state = upcomingState)
+                UpcomingScreen(state = upcomingState,
+                    navigateToDetail = { id ->
+                        navigateToDetail(id)
+                    }
+                )
             }
             composable(route = BottomBarScreens.Profile.root) {
                 Text("profile")
