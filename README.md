@@ -12,6 +12,7 @@ Welcome to the **Movie App**! This mobile application allows users to discover, 
 ## 🛠️ Technologies Used
 
 - **Kotlin**: Primary programming language.
+- **MVI (Model-View-Intent)** architecture pattern :  MVI is a unidirectional data flow pattern that helps in managing the state of the application effectively and predictably.
 - **Jetpack Compose**: For building a declarative and modern UI.
 - **Retrofit**: For making network requests to the movie API.
 - **Coil**: For efficient image loading and caching.
